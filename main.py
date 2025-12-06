@@ -49,6 +49,7 @@ def get_gmail_body(message):
 
     return body
 
+# Connect to Gmail and return the service object that lets us read emails
 def get_gmail_service():
     """Connect to Gmail and return the service object that lets us read emails"""
     creds = None
@@ -105,9 +106,18 @@ def categorize_email(subject, sender):
     # For each category, define a list of keywords and check if any keyword appears in the subject or sender
     # If a match is found, return that category name
     
+    # Finance & Banking
+    finance_keywords = [
+        'moniepoint', 'accessmore', 'bank', 'finance', 'payment',
+        'transaction', 'debit', 'credit', 'money'
+    ]
+    # Check if any finance keyword appears in subject OR sender
+    if any(keyword in subject_lower or keyword in sender_lower for keyword in finance_keywords):
+        return "Finance & Banking"
+    
     # Security & Login Alerts
     security_keywords = [
-        'login', 'verification', '2-step', '2fa', 'authenticat', 'access',
+        'login', 'verification', '2-step', '2fa', 'authenticat', 'access', 'alert',
         'debit alert', 'credit alert', 'successful login', 'security'
     ]
     if any(keyword in subject_lower or keyword in sender_lower for keyword in security_keywords):
@@ -190,18 +200,10 @@ def categorize_email(subject, sender):
     if any(keyword in subject_lower or keyword in sender_lower for keyword in social_keywords):
         return "Social & Networking"
     
-    # Finance & Banking
-    finance_keywords = [
-        'moniepoint', 'accessmore', 'bank', 'finance', 'payment',
-        'transaction', 'alert', 'debit', 'credit', 'money'
-    ]
-    # Check if any finance keyword appears in subject OR sender
-    if any(keyword in subject_lower or keyword in sender_lower for keyword in finance_keywords):
-        return "Finance & Banking"
-    
     # If no other category matches, put it in "Other"
     return "Other"
 
+# Extract email data from Gmail and categorize them
 def extract_email_data(service, max_results=50):
     """Get emails from Gmail and extract useful information from them"""
     try:
@@ -395,7 +397,9 @@ def main():
                 with col1:
                     st.write(f"**From:** {email['sender']}")
                     st.write(f"**Date:** {email['date']}")
-                    st.write(f"**Preview:** {email['snippet']}")
+                    # st.write(f"**Preview:** {email['snippet']}")
+                    st.markdown(f"**Preview:** {email['snippet']}", unsafe_allow_html=True)
+
                 
                 with col2:
                     st.write(f"**Category:** {email['category']}")
